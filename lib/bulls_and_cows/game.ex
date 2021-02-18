@@ -27,7 +27,8 @@ defmodule BullsAndCows.Game do
     d3 = Enum.random([0,1,2,3,4,5,6,7,8,9])
     d4 = Enum.random([0,1,2,3,4,5,6,7,8,9])
 
-    str = [d1,d2,d3,d4]
+    str = [Integer.to_string(d1), Integer.to_string(d2), Integer.to_string(d3),
+      Integer.to_string(d4)]
     str
   end
 
@@ -39,34 +40,41 @@ defmodule BullsAndCows.Game do
 
   def get_results(st, gs) do
     sec = st.secret
-    gs1 = gs
 
     #check for bulls
-    bulls = check_char(sec, gs1, 0)
+    {bulls, newSec, newGs} = check_bulls(sec, gs, 0, sec, gs)
 
-    #check for cows, lists need to be sorted
-    cows = check_char(sec, gs1, 0)
+    #check for cows
+    cows = check_cows(newSec, newGs)
 
     bac = {"Bulls: ", bulls, "Cows: ", cows}
     bac
   end
 
-  def check_char(sec, gs, num) do
-
+  def check_bulls(sec, gs, num, newSec, newGs) do
     case sec do
       [] ->
         #list is mt, return num
-        num
+        {num, newSec, newGs}
       _ ->
       cond do
         hd(sec) == hd(gs) ->
           #remove heads, add 1 b or c, check again
-          check_char(tl(sec), tl(gs), num+1)
+          check_bulls(tl(sec), tl(gs), num+1, tl(sec), tl(gs))
         hd(sec) != hd(gs) ->
           #remove heads, check again
-          check_char(tl(sec), tl(gs), num)
+          check_bulls(tl(sec), tl(gs), num, newSec, newGs)
       end
     end
   end
+
+  def check_cows(sec, gs) do
+    secSet = MapSet.new(sec)
+    gsSet = MapSet.new(gs)
+    num = (Enum.count(sec) - 1) -
+      (MapSet.size(MapSet.difference(secSet, gsSet)))
+    num
+  end
+
 
 end
