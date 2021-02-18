@@ -38,17 +38,18 @@ defmodule BullsAndCows.Game do
   end
 
   def get_results(st, gs) do
-    index = 0
-    Enum.map(gs, fn(g) -> check_char(st.secret, g, index = index + 1) end)
+    # checks for
+    Enum.map(gs, fn(g) -> check_char(st.secret, g) end)
+    # to check for other one, sort lists and check again
   end
 
-  def check_char(sec, char, index) do
+  def check_char(sec, char) do
     Enum.map(sec, fn(s) ->
       cond do
         (s == char) ->
-          "equals" <> to_string(index)
+          "equals"
         (s != char) ->
-          "dne" <> to_string(index)
+          "dne"
       end
     end)
   end
