@@ -23,9 +23,9 @@ defmodule BullsAndCows.Game do
   def get_random() do
     # gets the random 4 digit num for secret
     d1 = Enum.random([0,1,2,3,4,5,6,7,8,9])
-    d2 = Enum.random([0,1,2,3,4,5,6,7,8,9])
-    d3 = Enum.random([0,1,2,3,4,5,6,7,8,9])
-    d4 = Enum.random([0,1,2,3,4,5,6,7,8,9])
+    d2 = Enum.random(List.delete([0,1,2,3,4,5,6,7,8,9], d1))
+    d3 = Enum.random(List.delete(List.delete([0,1,2,3,4,5,6,7,8,9], d1), d2))
+    d4 = Enum.random(List.delete(List.delete(List.delete([0,1,2,3,4,5,6,7,8,9], d1), d2), d3))
 
     str = [Integer.to_string(d1), Integer.to_string(d2), Integer.to_string(d3),
       Integer.to_string(d4)]
@@ -34,21 +34,27 @@ defmodule BullsAndCows.Game do
 
   def guess(st, gs) do
     #add guess to the list of guesses
-    %{ st | guesses: st.guesses ++ [gs]}
+    %{ st | guesses: st.guesses ++ [gs],
+            results: st.results ++ get_results(st, gs)}
 
   end
 
   def get_results(st, gs) do
     sec = st.secret
+    cond do
+      sec == gs ->
+        #Win
+        %{ st | message: "You Win!" }
+      sec != gs ->
+        #check for bulls
+        {bulls, newSec, newGs} = check_bulls(sec, gs, 0, sec, gs)
 
-    #check for bulls
-    {bulls, newSec, newGs} = check_bulls(sec, gs, 0, sec, gs)
+        #check for cows
+        cows = check_cows(newSec, newGs)
 
-    #check for cows
-    cows = check_cows(newSec, newGs)
-
-    bac = {"Bulls: ", bulls, "Cows: ", cows}
-    bac
+        bac = {"Bulls: ", bulls, "Cows: ", cows}
+        bac
+    end
   end
 
   def check_bulls(sec, gs, num, newSec, newGs) do
@@ -71,7 +77,7 @@ defmodule BullsAndCows.Game do
   def check_cows(sec, gs) do
     secSet = MapSet.new(sec)
     gsSet = MapSet.new(gs)
-    num = (Enum.count(sec) - 1) -
+    num = (Enum.count(sec)) -
       (MapSet.size(MapSet.difference(secSet, gsSet)))
     num
   end
