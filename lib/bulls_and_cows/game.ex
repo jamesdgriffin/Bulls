@@ -39,8 +39,14 @@ defmodule BullsAndCows.Game do
   end
 
   def guess(st, gs) do
-    arrGs = String.split(List.last(gs), "", trim: true)
+    arrGs = Enum.uniq(String.split(List.last(gs), "", trim: true))
     cond do
+      #Invalid Guess, not all nums
+      !Enum.all?(arrGs, fn x ->
+       Enum.member?(["1","2","3","4","5","6","7","8","9","0"], x) end) ->
+         st = %{ st | message: "Invalid input. Try again." }
+         st = %{ st | text: "" }
+         st
       #last guess
       Enum.count(st.guesses) == 7 ->
         cond do
@@ -62,6 +68,7 @@ defmodule BullsAndCows.Game do
         st = %{ st | message: "" }
         st = %{ st | text: "" }
         st
+      #invalid guess, not 4 digs
       Enum.count(arrGs) != 4 ->
         st = %{ st | message: "Invalid input. Try again." }
         st = %{ st | text: "" }
