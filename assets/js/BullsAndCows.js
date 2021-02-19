@@ -1,52 +1,36 @@
-import React, {useState, useEffect} from 'react';
-import {getRandom, getResult, valid} from './game.js';
+import React, { useState, useEffect } from 'react';
+import { getRandom, getResult, valid } from './game.js';
+import { ch_join, ch_push, ch_reset, ch_guess } from './socket';
 
 function BullsAndCows() {
   const [state, setState] = useState({
-    secret: "",
     guesses: [],
     results: [],
     text: "",
     message: "",
   });
 
-  let {secret, guesses, results, text, message} = state;
+  let {guesses, results, text, message} = state;
+  let view = text;
 
-  function setSecret(sct) {
-    let st1 = Object.assign({}, state, {secret: sct});
-    setState(st1);
-  }
-
-  function init() {
-    setSecret(getRandom());
-  }
+  useEffect(() => {
+    ch_join(setState);
+  });
 
   function changeText(ev) {
     //setText(ev.target.value);
     let st1 = Object.assign({}, state, {text: ev.target.value});
-    setState(st1);
+    //setState(st1);
+    ch_push(st1);
   }
 
   function guess() {
-    if((text==secret) && !(text=="")) {
-      win();
-    }
-    else if(valid(text)) {
-      let result = getResult(text, secret);
-      let st1 = Object.assign({}, state,
-        {guesses: guesses.concat(text),
-          results: results.concat(result),
-          text: "",
-          message: ""});
-      setState(st1);
-      if(guesses.length >= 7) {
-        lose();
-      }
-    }
-    else {
-      let st1 = Object.assign({}, state, {text: "", message: "Invalid Entry. Try again."});
-      setState(st1);
-    }
+    console.log(state.text);
+    let st1 = Object.assign({}, state, {
+      text: "",
+      guesses: state.guesses.concat(state.text),
+    });
+    ch_guess(st1);
   }
 
   function win() {
@@ -60,31 +44,14 @@ function BullsAndCows() {
   }
 
   function reset() {
-    let st1 = Object.assign({}, state,
-      {secret: getRandom(),
-        guesses: [],
-        results: [],
-        text: "",
-        message: ""});
-    setState(st1);
+    console.log("reset");
+    ch_reset();
   }
 
   function enter(ev) {
     if (ev.key == "Enter") {
       guess();
     }
-  }
-
-  if(secret=="") {
-    return (
-      <div className="App">
-        <h1>Bulls and Cows game!</h1>
-        Read the
-        <a href="https://en.wikipedia.org/wiki/Bulls_and_Cows"> rules</a>
-        , then press play!
-        <button onClick={init}>Play!</button>
-      </div>
-    );
   }
 
   if((message=="You Win!") ||

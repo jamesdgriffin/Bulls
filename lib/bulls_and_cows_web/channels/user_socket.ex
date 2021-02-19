@@ -3,6 +3,7 @@ defmodule BullsAndCowsWeb.UserSocket do
 
   ## Channels
   # channel "room:*", BullsAndCowsWeb.RoomChannel
+  channel "game:*", BullsAndCowsWeb.GameChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

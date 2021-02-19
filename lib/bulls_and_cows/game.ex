@@ -20,6 +20,11 @@ defmodule BullsAndCows.Game do
     }
   end
 
+  def change_text(st, txt) do
+    st = %{ st | text: txt}
+    st
+  end
+
   def get_random() do
     # gets the random 4 digit num for secret
     d1 = Enum.random([0,1,2,3,4,5,6,7,8,9])
@@ -33,9 +38,11 @@ defmodule BullsAndCows.Game do
   end
 
   def guess(st, gs) do
+    arrGs = String.split(List.last(gs), "", trim: true)
     #add guess to the list of guesses
-    %{ st | guesses: st.guesses ++ [gs],
-            results: st.results ++ get_results(st, gs)}
+    st = %{ st | guesses: [arrGs] ++ st.guesses }
+    st = %{ st | results: st.results ++ [get_results(st, arrGs)] }
+    st
 
   end
 
@@ -44,7 +51,7 @@ defmodule BullsAndCows.Game do
     cond do
       sec == gs ->
         #Win
-        %{ st | message: "You Win!" }
+        "You Win!"
       sec != gs ->
         #check for bulls
         {bulls, newSec, newGs} = check_bulls(sec, gs, 0, sec, gs)
@@ -52,7 +59,8 @@ defmodule BullsAndCows.Game do
         #check for cows
         cows = check_cows(newSec, newGs)
 
-        bac = {"Bulls: ", bulls, "Cows: ", cows}
+        bac = "Bulls: " <> Integer.to_string(bulls) <> " " <>
+              "Cows: " <> Integer.to_string(cows)
         bac
     end
   end
