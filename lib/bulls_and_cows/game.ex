@@ -39,11 +39,18 @@ defmodule BullsAndCows.Game do
 
   def guess(st, gs) do
     arrGs = String.split(List.last(gs), "", trim: true)
-    #add guess to the list of guesses
-    st = %{ st | guesses: [arrGs] ++ st.guesses }
-    st = %{ st | results: st.results ++ [get_results(st, arrGs)] }
-    st
-
+    cond do
+      Enum.count(arrGs) == 4 ->
+        st = %{ st | guesses: [arrGs] ++ st.guesses }
+        st = %{ st | results: st.results ++ [get_results(st, arrGs)] }
+        st = %{ st | message: "" }
+        st = %{ st | text: "" }
+        st
+      Enum.count(arrGs) != 4 ->
+        st = %{ st | message: "Invalid input. Try again." }
+        st = %{ st | text: "" }
+        st
+    end
   end
 
   def get_results(st, gs) do
