@@ -41,6 +41,18 @@ defmodule BullsAndCows.Game do
   def guess(st, gs) do
     arrGs = String.split(List.last(gs), "", trim: true)
     cond do
+      #last guess
+      Enum.count(st.guesses) == 7 ->
+        cond do
+          arrGs == st.secret ->
+            st = %{ st | message: "You Win!" }
+            st
+          arrGs != st.secret ->
+            st = %{ st | guesses: st.guesses ++ [arrGs] }
+            st = %{ st | results: st.results ++ [get_results(st, arrGs)] }
+            st = %{ st | message: "You Lose! Press Reset button to try again." }
+            st
+        end
       arrGs == st.secret ->
         st = %{ st | message: "You Win!" }
         st
