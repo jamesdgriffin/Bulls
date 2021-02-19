@@ -3,6 +3,7 @@ defmodule BullsAndCows.Game do
   def new do
     %{
       secret: get_random(),
+      #secret: ["1", "2", "3", "4"],
       guesses: [],
       results: [],
       text: "",
@@ -40,8 +41,11 @@ defmodule BullsAndCows.Game do
   def guess(st, gs) do
     arrGs = String.split(List.last(gs), "", trim: true)
     cond do
+      arrGs == st.secret ->
+        st = %{ st | message: "You Win!" }
+        st
       Enum.count(arrGs) == 4 ->
-        st = %{ st | guesses: [arrGs] ++ st.guesses }
+        st = %{ st | guesses: st.guesses ++ [arrGs] }
         st = %{ st | results: st.results ++ [get_results(st, arrGs)] }
         st = %{ st | message: "" }
         st = %{ st | text: "" }
