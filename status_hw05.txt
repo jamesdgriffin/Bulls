@@ -8,7 +8,7 @@ James Griffin
 
 
 3. Which parts of this assignment did you have trouble with, if any?
-
+Deploying. App works PERFECTLY, spent HOURS deploying, couldnt.
 
 4. What part of your application state is on the server?
 
